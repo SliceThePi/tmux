@@ -501,7 +501,72 @@ screen_redraw_draw_borders_cell(struct screen_redraw_ctx *ctx, u_int i, u_int j,
 		tty_cursor(tty, i, ctx->statuslines + j);
 	else
 		tty_cursor(tty, i, j);
-	tty_putc(tty, CELL_BORDERS[type]);
+
+    flag = options_get_number(s->options, "alternate-border");
+    if (flag)
+    {
+        switch (type)
+        {
+            case CELL_INSIDE:
+                tty_putc(tty, CELL_BORDERS[type]);
+                break;
+
+            case CELL_OUTSIDE:
+                tty_putc(tty, CELL_BORDERS[type]);
+                break;
+
+            case CELL_LEFTRIGHT:                     /*    |    */
+                tty_putn(tty, "\xe2\x95\x91", 3, 1); /*    |    */
+                break;                               /*    |    */
+
+            case CELL_TOPBOTTOM:                     /*         */
+                tty_putn(tty, "\xe2\x95\x90", 3, 1); /* ------- */
+                break;                               /*         */
+
+            case CELL_TOPLEFT:                       /*    +--  */
+                tty_putn(tty, "\xe2\x95\x97", 3, 1); /*    |    */
+                break;                               /*         */
+
+            case CELL_TOPRIGHT:                      /*  --+    */
+                tty_putn(tty, "\xe2\x95\x94", 3, 1); /*    |    */
+                break;                               /*         */
+
+            case CELL_BOTTOMRIGHT:                   /*    |    */
+                tty_putn(tty, "\xe2\x95\x9d", 3, 1); /*  --+    */
+                break;                               /*         */
+
+            case CELL_BOTTOMLEFT:                    /*    |    */
+                tty_putn(tty, "\xe2\x95\x9a", 3, 1); /*    +--  */
+                break;                               /*         */
+
+            case CELL_TOPJOIN:                       /*    |    */
+                tty_putn(tty, "\xe2\x95\xa6", 3, 1); /*    |    */
+                break;                               /* ------- */
+
+            case CELL_BOTTOMJOIN:                    /* ------- */
+                tty_putn(tty, "\xe2\x95\xa9", 3, 1); /*    |    */
+                break;                               /*    |    */
+
+            case CELL_LEFTJOIN:                      /*    |    */
+                tty_putn(tty, "\xe2\x95\xa0", 3, 1); /*    |--- */
+                break;                               /*    |    */
+
+            case CELL_RIGHTJOIN:                     /*    |    */
+                tty_putn(tty, "\xe2\x95\xa3", 3, 1); /* ---|    */
+                break;                               /*    |    */
+
+            case CELL_JOIN:                          /*    |    */
+                tty_putn(tty, "\xe2\x95\xac", 3, 1); /*  --+--  */
+                break;                               /*    |    */
+
+            default:
+                break;
+        }
+    }
+    else
+    {
+        tty_putc(tty, CELL_BORDERS[type]);
+    }
 }
 
 /* Draw the borders. */
